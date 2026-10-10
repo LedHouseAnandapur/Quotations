@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LED HOUSE – Sales Quotation</title>
+
+<!-- Used only for HD/FHD PNG export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root{
+  --brown:#75502f;
+  --tan:#ead7c1;
+  --side:#d0b89d;
+  --orange:#efa35e;
+  --ink:#171717;
+  --line:#333;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#eee9e2;
+  color:var(--ink);
+}
+.app{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:390px 1fr;
+}
+.panel{
+  background:#171717;
+  color:#eee;
+  padding:20px;
+  height:100vh;
+  overflow:auto;
+  position:sticky;
+  top:0;
+}
+.panel h1{margin:0;color:#fff;font-size:21px}
+.panel .sub{color:#aaa;font-size:12px;margin:4px 0 20px}
+.section{
+  border-top:1px solid #363636;
+  padding-top:14px;
+  margin-top:15px;
+}
+.section h2{
+  color:#d7b27e;
+  font-size:11px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin:0 0 11px;
+}
+.field{margin-bottom:9px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;color:#aaa;font-size:11px;margin-bottom:4px}
+input,textarea{
+  width:100%;
+  border:1px solid #404040;
+  background:#252525;
+  color:#eee;
+  border-radius:4px;
+  padding:8px;
+  font:12px Arial,sans-serif;
+  outline:none;
+}
+textarea{min-height:62px;resize:vertical}
+input:focus,textarea:focus{border-color:#a98256}
+
+.items-head,.item{
+  display:grid;
+  grid-template-columns:27px 1fr 54px 65px 30px;
+  gap:5px;
+  align-items:start;
+}
+.items-head{
+  color:#777;
+  font-size:9px;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.item{margin-bottom:6px}
+.num{
+  padding:8px 0;
+  text-align:center;
+  background:#303030;
+  color:#d7b27e;
+  border-radius:3px;
+  font-size:11px;
+}
+.item input{padding:7px 5px;font-size:11px}
+.remove{
+  height:31px;
+  border:1px solid #633;
+  background:#211818;
+  color:#e77;
+  border-radius:3px;
+  cursor:pointer;
+}
+.add{
+  width:100%;
+  border:1px dashed #67533c;
+  background:transparent;
+  color:#d7b27e;
+  border-radius:4px;
+  padding:8px;
+  cursor:pointer;
+}
+.buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:19px;
+}
+.action{
+  border:0;
+  border-radius:4px;
+  padding:10px 6px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.primary{background:var(--brown);color:#fff;grid-column:1/-1}
+.hd{background:#6b8b6e;color:#fff}
+.fhd{background:#496b83;color:#fff}
+.print{background:#d7b27e;color:#171717}
+.reset{background:#333;color:#ddd}
+.small-note{
+  color:#888;
+  font-size:10px;
+  line-height:1.45;
+  margin-top:7px;
+}
+.google-status{
+  font-size:10px;
+  line-height:1.4;
+  color:#9e9e9e;
+  margin-top:7px;
+}
+.google-status.ok{color:#9ac89d}
+.google-status.warn{color:#e1b57c}
+
+.preview{
+  padding:25px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.preview-title{
+  width:794px;
+  margin:0 auto 12px;
+  color:#777;
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+/* ================= A4 QUOTATION ================= */
+#quotation{
+  width:794px;
+  height:1123px;
+  position:relative;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:0 5px 28px rgba(0,0,0,.16);
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
+
+/* The sample's diagonal background panels */
+.shape{
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+}
+.shape.top{
+  width:390px;
+  height:285px;
+  right:-125px;
+  top:-110px;
+  background:var(--side);
+  transform:skewX(-19deg);
+}
+.shape.bottom{
+  width:405px;
+  height:300px;
+  left:-135px;
+  bottom:-120px;
+  background:var(--orange);
+  transform:skewX(-19deg);
+}
+.paper-border{
+  position:absolute;
+  z-index:4;
+  left:38px;
+  top:38px;
+  right:38px;
+  bottom:38px;
+  border:2px solid #6c5236;
+  pointer-events:none;
+}
+.content{
+  position:relative;
+  z-index:2;
+  padding:72px 55px 50px;
+  height:100%;
+}
+.title{
+  color:var(--brown);
+  text-align:center;
+  font-size:29px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+.meta{
+  text-align:center;
+  font-size:15px;
+  line-height:1.55;
+  font-weight:bold;
+  margin-bottom:30px;
+}
+.parties{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px;
+  margin-bottom:29px;
+  font-size:15px;
+  line-height:1.55;
+}
+.party.right{text-align:right}
+.party-title,.party-name{font-weight:700}
+.detail-title{
+  font-size:15px;
+  font-weight:700;
+  margin-bottom:9px;
+}
+.items-table,.summary{
+  width:100%;
+  border-collapse:collapse;
+}
+.items-table{
+  font-size:14px;
+}
+.items-table th,.items-table td,
+.summary td{
+  border:1px solid #333;
+}
+.items-table th{
+  background:var(--tan);
+  text-align:center;
+  font-weight:700;
+  padding:10px 7px;
+}
+.items-table td{
+  padding:9px 7px;
+}
+.items-table td:first-child{text-align:left}
+.items-table td:nth-child(2){text-align:center}
+.items-table td:nth-child(3),
+.items-table td:nth-child(4){text-align:right}
+
+.summary td{
+  padding:9px;
+  font-size:14px;
+}
+.summary .label{
+  width:75%;
+  text-align:right;
+  background:var(--tan);
+}
+.summary .amount{
+  width:25%;
+  text-align:right;
+}
+.terms{
+  margin-top:27px;
+  font-size:14px;
+  line-height:1.48;
+}
+.terms h3{margin:0 0 2px;font-size:15px}
+.terms ul{margin:0;padding-left:18px}
+.signatures{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  margin-top:27px;
+  font-size:14px;
+}
+.sig.right{text-align:right}
+.sig-space{height:58px}
+.sig-name{font-weight:700;font-size:15px}
+.sig-role{font-size:14px}
+
+@media(max-width:1050px){
+  .app{grid-template-columns:1fr}
+  .panel{height:auto;position:relative}
+  .preview{padding:15px}
+}
+@media print{
+  @page{size:A4 portrait;margin:0}
+  *{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  body{background:#fff}
+  .panel,.preview-title{display:none!important}
+  .app{display:block}
+  .preview{display:block;padding:0}
+  #quotation{
+    width:210mm;
+    height:297mm;
+    box-shadow:none;
+  }
+  .paper-border{
+    left:10mm;right:10mm;top:10mm;bottom:10mm;
+  }
+  .content{
+    padding:19mm 14.5mm 13mm;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- ================= CONTROL PANEL ================= -->
+<aside class="panel">
+  <h1>LED HOUSE</h1>
+  <div class="sub">Sales Quotation Generator</div>
+
+  <div class="section">
+    <h2>Quotation Details</h2>
+    <div class="row">
+      <div class="field">
+        <label>Quotation Number</label>
+        <input id="quoteNo" value="SQ-2024-001">
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input id="quoteDate" type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Valid Until</label>
+      <input id="validUntil" type="date">
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>From</h2>
+    <div class="field"><label>Company</label><input id="fromName" value="LED HOUSE"></div>
+    <div class="field"><label>Address</label><textarea id="fromAddr">Anandapur Bridge Chhak, Anandapur, Keonjhar-758021</textarea></div>
+    <div class="row">
+      <div class="field"><label>Phone</label><input id="fromPhone" value="+91 91240 81685"></div>
+      <div class="field"><label>Email</label><input id="fromEmail" value="ledhouseanandapur@gmail.com"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>To / Customer</h2>
+    <div class="field"><label>Customer Name</label><input id="toName" placeholder="Customer name"></div>
+    <div class="field"><label>Address</label><textarea id="toAddr" placeholder="Customer address"></textarea></div>
+    <div class="row">
+      <div class="field"><label>Phone</label><input id="toPhone" placeholder="Phone"></div>
+      <div class="field"><label>Email</label><input id="toEmail" placeholder="Email"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Items</h2>
+    <div class="items-head"><div>#</div><div>Description</div><div>Qty</div><div>Rate</div><div></div></div>
+    <div id="itemEditor"></div>
+    <button class="add" onclick="addItem()">+ Add Item</button>
+  </div>
+
+  <div class="section">
+    <h2>Charges</h2>
+    <div class="row">
+      <div class="field"><label>Tax (%)</label><input id="taxRate" type="number" min="0" step=".01" value="0"></div>
+      <div class="field"><label>Shipping Cost (₹)</label><input id="shipping" type="number" min="0" step=".01" value="0"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Terms & Conditions</h2>
+    <textarea id="terms">Payment Terms: Payment is due within 15 days of the quotation/order date.
+Delivery Time: Estimated delivery time is 7-10 business days after order confirmation.
+Validity: This quotation is valid until the date mentioned above.
+Warranty: Warranty is on the basis of the company/manufacturer warranty.
+Shipping: Shipping cost is calculated based on the delivery location.</textarea>
+  </div>
+
+  <!-- GOOGLE FORM -->
+  <div class="section">
+    <h2>Google Form Auto Save</h2>
+
+    <div class="field">
+      <label>Connected Google Form</label>
+      <input id="googleFormUrl" value="https://docs.google.com/forms/d/e/1FAIpQLSeWJxFhj9YJM6P0cf7cmC5jTSkItGPilQzn4IPIAcAfouiM4Q/viewform?usp=pp_url&entry.1850916371=Priya&entry.937939187=9876541230&entry.2048429720=priyaaaa@gmail.com&entry.1141144446=led+tv+12+pic+&entry.1184780571=1500*12&entry.1325511750=okay">
+    </div>
+
+    <div class="small-note">
+      ✓ Google Form fields are now mapped from your pre-filled link. You do not need to enter the entry IDs manually.
+    </div>
+
+    <div class="small-note" style="margin-top:10px">
+      <b>Automatic mapping:</b><br>
+      Name → Customer Name<br>
+      Mobile no → Customer Phone<br>
+      Email → Customer Email<br>
+      Products / Items → All quotation items<br>
+      Amount Rate → Item rate × quantity details<br>
+      Others → Quotation number, total amount and terms
+    </div>
+
+    <div id="googleStatus" class="google-status ok">
+      ✓ Google Form is connected and ready.
+    </div>
+  </div>
+  </div>
+
+  <div class="buttons">
+    <button class="action primary" onclick="renderQuotation()">▶ Generate / Refresh</button>
+<div style="grid-column:1/-1;color:#888;font-size:10px;text-align:center;padding:3px 0">HD / Full HD / Print automatically sends the quotation to Google Form</div>
+    <button class="action hd" onclick="downloadQuotation('HD')">⬇ HD Download</button>
+    <button class="action fhd" onclick="downloadQuotation('FHD')">⬇ Full HD</button>
+    <button class="action print" onclick="downloadQuotation('PRINT')">🖨 Print / PDF</button>
+    <button class="action reset" onclick="resetAll()">↺ Reset</button>
+  </div>
+</aside>
+
+<!-- ================= PREVIEW ================= -->
+<main class="preview">
+  <div class="preview-title">▸ Live Quotation Preview</div>
+
+  <div id="quotation">
+    <div class="shape top"></div>
+    <div class="shape bottom"></div>
+    <div class="paper-border"></div>
+    <div class="content" id="quotationContent"></div>
+  </div>
+</main>
+</div>
+
+<script>
+let items=[
+  {desc:"LED TV",qty:1,rate:0},
+  {desc:"LED Monitor",qty:1,rate:0}
+];
+
+function v(id){return document.getElementById(id).value.trim()}
+
+function esc(s){
+  return String(s??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+function money(n){
+  return Number(n||0).toLocaleString("en-IN",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+function dateDisplay(x){
+  if(!x)return "";
+  const p=x.split("-");
+  return p[2]+"-"+p[1]+"-"+p[0];
+}
+
+function itemsText(){
+  return items.map((it,i)=>{
+    const line=(Number(it.qty)||0)*(Number(it.rate)||0);
+    return `${i+1}. ${it.desc} | Qty: ${it.qty} | Rate: ₹${money(it.rate)} | Total: ₹${money(line)}`;
+  }).join("\n");
+}
+
+function calc(){
+  const subtotal=items.reduce((s,it)=>s+(Number(it.qty)||0)*(Number(it.rate)||0),0);
+  const taxRate=Number(v("taxRate"))||0;
+  const tax=subtotal*taxRate/100;
+  const shipping=Number(v("shipping"))||0;
+  return {subtotal,taxRate,tax,shipping,total:subtotal+tax+shipping};
+}
+
+function renderEditor(){
+  const box=document.getElementById("itemEditor");
+  box.innerHTML="";
+  items.forEach((it,i)=>{
+    const row=document.createElement("div");
+    row.className="item";
+    row.innerHTML=`
+      <div class="num">${i+1}</div>
+      <input value="${esc(it.desc)}" placeholder="Description"
+        oninput="items[${i}].desc=this.value;renderQuotation()">
+      <input type="number" min="1" value="${it.qty}"
+        oninput="items[${i}].qty=parseFloat(this.value)||1;renderQuotation()">
+      <input type="number" min="0" step=".01" value="${it.rate}"
+        oninput="items[${i}].rate=parseFloat(this.value)||0;renderQuotation()">
+      <button class="remove" onclick="removeItem(${i})">✕</button>`;
+    box.appendChild(row);
+  });
+}
+
+function addItem(){
+  items.push({desc:"",qty:1,rate:0});
+  renderEditor();renderQuotation();
+}
+
+function removeItem(i){
+  if(items.length===1)return alert("At least one item is required.");
+  items.splice(i,1);
+  renderEditor();renderQuotation();
+}
+
+function renderQuotation(){
+  const c=calc();
+  const terms=v("terms").split("\n").map(x=>x.trim()).filter(Boolean);
+
+  document.getElementById("quotationContent").innerHTML=`
+    <div class="title">SALES QUOTATION</div>
+
+    <div class="meta">
+      Quotation Number: ${esc(v("quoteNo"))}<br>
+      Date: ${dateDisplay(v("quoteDate"))}<br>
+      Valid Until: ${dateDisplay(v("validUntil"))}
+    </div>
+
+    <div class="parties">
+      <div class="party">
+        <div class="party-title">From:</div>
+        <div class="party-name">${esc(v("fromName"))}</div>
+        <div>${esc(v("fromAddr")).replace(/\n/g,"<br>")}</div>
+        <div>Phone: ${esc(v("fromPhone"))}</div>
+        <div>Email: ${esc(v("fromEmail"))}</div>
+      </div>
+      <div class="party right">
+        <div class="party-title">To:</div>
+        <div class="party-name">${esc(v("toName"))}</div>
+        <div>${esc(v("toAddr")).replace(/\n/g,"<br>")}</div>
+        <div>Phone: ${esc(v("toPhone"))}</div>
+        <div>Email: ${esc(v("toEmail"))}</div>
+      </div>
+    </div>
+
+    <div class="detail-title">ITEMIZED QUOTATION DETAILS:</div>
+
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Item Description</th>
+          <th>Quantity</th>
+          <th>Unit Price (₹)</th>
+          <th>Total Price (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(it=>{
+          const line=(Number(it.qty)||0)*(Number(it.rate)||0);
+          return `<tr>
+            <td>${esc(it.desc)}</td>
+            <td>${it.qty}</td>
+            <td>${money(it.rate)}</td>
+            <td>${money(line)}</td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+
+    <table class="summary">
+      <tr><td class="label">Subtotal</td><td class="amount">${money(c.subtotal)}</td></tr>
+      <tr><td class="label">Tax (${money(c.taxRate)}%)</td><td class="amount">${money(c.tax)}</td></tr>
+      <tr><td class="label">Shipping Cost</td><td class="amount">${money(c.shipping)}</td></tr>
+      <tr><td class="label"><b>Total Amount</b></td><td class="amount"><b>${money(c.total)}</b></td></tr>
+    </table>
+
+    <div class="terms">
+      <h3>TERMS AND CONDITIONS:</h3>
+      <ul>${terms.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+    </div>
+
+    <div class="signatures">
+      <div class="sig">
+        <div>Prepared By:</div>
+        <div class="sig-space"></div>
+        <div class="sig-name">${esc(v("fromName"))}</div>
+        <div class="sig-role">Sales / Authorized Representative</div>
+      </div>
+      <div class="sig right">
+        <div>Approved By:</div>
+        <div class="sig-space"></div>
+        <div class="sig-name">${esc(v("toName"))}</div>
+        <div class="sig-role">Customer</div>
+      </div>
+    </div>`;
+}
+
+/* ================= GOOGLE FORM =================
+   Google Forms accepts POST requests to /formResponse.
+   A hidden iframe is used so the browser does not leave this page.
+*/
+function configuredGoogleForm(){
+  return true;
+}
+
+function formResponseUrl(){
+  return "https://docs.google.com/forms/d/e/1FAIpQLSeWJxFhj9YJM6P0cf7cmC5jTSkItGPilQzn4IPIAcAfouiM4Q/formResponse";
+}
+
+function submitToGoogleForm(){
+  const c=calc();
+  const form=document.createElement("form");
+  form.method="POST";
+  form.action=formResponseUrl();
+  form.target="googleFormHiddenFrame";
+  form.style.display="none";
+
+  /*
+    Exact entry IDs recovered from the user's Google Forms pre-filled link:
+      1850916371  = Name
+      937939187   = Mobile no
+      2048429720  = Email
+      1141144446  = Products / Items
+      1184780571  = Amount Rate
+      1325511750  = Others
+  */
+
+  const data={
+    "entry.1850916371": v("toName"),
+    "entry.937939187": v("toPhone"),
+    "entry.2048429720": v("toEmail"),
+    "entry.1141144446": itemsText(),
+    "entry.1184780571": items.map(it=>{
+      const qty=Number(it.qty)||0;
+      const rate=Number(it.rate)||0;
+      return `${money(rate)} × ${qty} = ₹${money(qty*rate)}`;
+    }).join("\n"),
+    "entry.1325511750":
+      `Quotation No: ${v("quoteNo")}
+Total Amount: ₹${money(c.total)}
+Tax: ₹${money(c.tax)}
+Shipping: ₹${money(c.shipping)}
+Valid Until: ${dateDisplay(v("validUntil"))}
+Terms: ${v("terms")}`
+  };
+
+  Object.entries(data).forEach(([name,value])=>{
+    const input=document.createElement("input");
+    input.type="hidden";
+    input.name=name;
+    input.value=value;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+  setTimeout(()=>form.remove(),1500);
+
+  document.getElementById("googleStatus").textContent=
+    "✓ Quotation data submitted to Google Form.";
+  document.getElementById("googleStatus").className="google-status ok";
+  return true;
+}
+
+function ensureGoogleFrame(){
+  if(document.getElementById("googleFormHiddenFrame"))return;
+  const iframe=document.createElement("iframe");
+  iframe.name="googleFormHiddenFrame";
+  iframe.id="googleFormHiddenFrame";
+  iframe.style.display="none";
+  document.body.appendChild(iframe);
+}
+
+
+/* ================= HD / FULL HD DOWNLOAD ================= */
+async function downloadQuotation(mode){
+  ensureGoogleFrame();
+
+  // Automatically save the same quotation data to Google Form first.
+  submitToGoogleForm();
+
+  if(mode==="PRINT"){
+    setTimeout(()=>window.print(),250);
+    return;
+  }
+
+  if(typeof html2canvas==="undefined"){
+    alert("HD/FHD export library could not load. Please check your internet connection.");
+    return;
+  }
+
+  const q=document.getElementById("quotation");
+  const button=mode==="HD"?document.querySelector(".hd"):document.querySelector(".fhd");
+  const old=button.textContent;
+
+  try{
+    button.disabled=true;
+    button.textContent="⏳ Creating...";
+
+    await new Promise(r=>setTimeout(r,180));
+
+    /*
+      The A4 preview is 794×1123.
+      HD  = 1280px wide
+      FHD = 1920px wide
+      This preserves exactly the same A4 aspect ratio and design.
+    */
+    const targetWidth=mode==="HD"?1280:1920;
+    const scale=targetWidth/q.offsetWidth;
+
+    const canvas=await html2canvas(q,{
+      scale:scale,
+      width:q.offsetWidth,
+      height:q.offsetHeight,
+      backgroundColor:"#ffffff",
+      useCORS:true,
+      allowTaint:false,
+      logging:false,
+      imageTimeout:15000
+    });
+
+    const a=document.createElement("a");
+    const number=v("quoteNo")||"Quotation";
+    a.download=`LED_HOUSE_${number}_${mode}.png`;
+    a.href=canvas.toDataURL("image/png",1.0);
+    a.click();
+
+  }catch(e){
+    alert("Download failed: "+e.message);
+  }finally{
+    button.disabled=false;
+    button.textContent=old;
+  }
+}
+
+function setDates(){
+  const now=new Date();
+  const iso=now.toISOString().slice(0,10);
+  document.getElementById("quoteDate").value=iso;
+  const valid=new Date(now);
+  valid.setDate(valid.getDate()+7);
+  document.getElementById("validUntil").value=valid.toISOString().slice(0,10);
+}
+
+function resetAll(){
+  if(!confirm("Reset quotation?"))return;
+  document.getElementById("quoteNo").value="SQ-2024-001";
+  document.getElementById("toName").value="";
+  document.getElementById("toAddr").value="";
+  document.getElementById("toPhone").value="";
+  document.getElementById("toEmail").value="";
+  document.getElementById("taxRate").value="0";
+  document.getElementById("shipping").value="0";
+  items=[{desc:"LED TV",qty:1,rate:0},{desc:"LED Monitor",qty:1,rate:0}];
+  renderEditor();
+  renderQuotation();
+}
+
+document.addEventListener("input",e=>{
+  if(e.target.closest(".panel")){
+    renderQuotation();
+  }
+});
+
+document.addEventListener("change",e=>{
+  if(e.target.closest(".panel")){
+    renderQuotation();
+  }
+});
+
+ensureGoogleFrame();
+setDates();
+renderEditor();
+renderQuotation();
+</script>
+</body>
+</html>
